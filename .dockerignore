@@ -1,0 +1,8 @@
+docker/
+docs/
+compose/
+README.md
+*.pyc
+__pycache__/
+.vscode/
+.git/

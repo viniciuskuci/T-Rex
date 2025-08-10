@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  machine1:
+    image: python:3.10-slim
+    container_name: machine1
+    networks:
+      virtual_bridge:
+        ipv4_address: 10.20.30.2
+    tty: true
+
+  machine2:
+    image: python:3.10-slim
+    container_name: machine2
+    networks:
+      virtual_bridge:
+        ipv4_address: 10.20.30.3
+    tty: true
+
+  machine3:
+    image: python:3.10-slim
+    container_name: machine3
+    networks:
+      virtual_bridge:
+        ipv4_address: 10.20.30.4
+    tty: true
+  
+networks:
+  virtual_bridge:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.20.30.0/24
+          gateway: 10.20.30.1

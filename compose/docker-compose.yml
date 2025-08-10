@@ -1,25 +1,31 @@
 version: '3.8'
 
 services:
-  machine1:
+  dinasore1:
     image: python:3.10-slim
-    container_name: machine1
+    container_name: dinasore1
+    volumes:
+      - ../:/T-Rex
     networks:
       virtual_bridge:
         ipv4_address: 10.20.30.2
     tty: true
 
-  machine2:
+  dinasore2:
     image: python:3.10-slim
-    container_name: machine2
+    container_name: dinasore2
+    volumes:
+      - ../:/T-Rex
     networks:
       virtual_bridge:
         ipv4_address: 10.20.30.3
     tty: true
 
-  machine3:
+  dinasore3:
     image: python:3.10-slim
-    container_name: machine3
+    container_name: dinasore3
+    volumes:
+      - ../:/T-Rex
     networks:
       virtual_bridge:
         ipv4_address: 10.20.30.4

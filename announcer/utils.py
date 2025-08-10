@@ -3,10 +3,7 @@ import uuid
 
 def get_self_ip():
     """
-    Get the local IP address of this machine.
-    
-    Returns:
-        str: Local IP address.
+    Get the local IP address of the current machine.
     """
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
@@ -17,12 +14,9 @@ def get_self_ip():
         print(f"Error getting local IP address: {e}")
         return None
 
-def get_self_hostname():
+def get_self_hostname() -> str:
     """
-    Get a unique hostname for this machine.
-    
-    Returns:
-        str: Hostname with identifier.
+    Get the hostname of the current machine without the '.local' suffix.
     """
     hostname = socket.gethostname()
     if hostname.endswith('.local'):

@@ -3,6 +3,6 @@
 build: 
 	docker build --no-cache -t python:3.10-slim -f docker/Dockerfile .
 compose:
-	docker compose -f compose/docker-compose.yml up -d
+	docker compose -f docker/docker-compose.yml up -d
 down:
-	docker compose -f compose/docker-compose.yml down
+	docker compose -f docker/docker-compose.yml down

@@ -8,7 +8,7 @@ A first overview fo the system:
 
 device_name: `MyDevice.local.`
 service_type: `_http._tcp.local.`
-service_name (nome do serviço completo): `MyWebServer._http._tcp.local.`
+service_name (nome do serviço completo): `MyDevice._http._tcp.local.`
 
 | Field           | Description                                                                 |
 |-----------------|-----------------------------------------------------------------------------|
@@ -27,9 +27,9 @@ service_name (nome do serviço completo): `MyWebServer._http._tcp.local.`
 
 First packets announces a service and a device:
 ``` text 
-18:45:10.112345 IP 192.168.1.50.mdns > 224.0.0.251.mdns: 0*- [0q] 1/0/4 PTR ServiceName._ServiceType._tcp.local. (125)
+18:45:10.112345 IP 192.168.1.50.mdns > 224.0.0.251.mdns: 0*- [0q] 1/0/4 PTR MyDevice._ServiceType._tcp.local. (125)
 ```
 Subsequent servies announces full details about the service, IP and Port:
 ``` text
-18:45:10.325678 IP 192.168.1.50.mdns > 224.0.0.251.mdns: 0*- [0q] 5/0/0 PTR ServiceName._ServiceType._tcp.local., (Cache flush) SRV ServiceName._ServiceType._tcp.local.:ServicePort 0 0, (Cache flush) TXT "versao=1.0", (Cache flush) A 192.168.1.50, (Cache flush) NSEC (200)
+18:45:10.325678 IP 192.168.1.50.mdns > 224.0.0.251.mdns: 0*- [0q] 5/0/0 PTR MyDevice._ServiceType._tcp.local., (Cache flush) SRV ServiceName.MyDevice._tcp.local.:ServicePort 0 0, (Cache flush) TXT "versao=1.0", (Cache flush) A 192.168.1.50, (Cache flush) NSEC (200)
 ```

@@ -8,3 +8,7 @@ Possible service types:
 This package launches a process that listens for mDNS announcements and stores new services in a local database.
 
 """
+
+from .discover import Discover, DiscoverThread
+
+__all__ = ['Discover', 'DiscoverThread']

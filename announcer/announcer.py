@@ -1,6 +1,10 @@
 from zeroconf import Zeroconf, ServiceInfo
 import socket
 from utils import *
+import logging
+
+logger = logging.getLogger("__name__")
+logging.basicConfig(filename="logs.log", level=logging.INFO, format='%(asctime)s %(levelname)-7s - %(module)-9s - %(funcName)-20s - %(message)s', datefmt='[%Y-%m-%d %H:%M:%S] -')
 
 
 class Announcer:
@@ -12,18 +16,19 @@ class Announcer:
         for service in self.services:
             try:
                 self.zeroconf.register_service(service)
-                print(f"Service {service.server} announced on {socket.inet_ntoa(service.addresses[0])}:{service.port}")
+                logger.info(f"Successfully registered the service {service.name}, announced at {socket.inet_ntoa(service.addresses[0])}:{service.port}")
+               
             except Exception as e:
-                print(f"Error announcing service {service.server}: {e}")
+                logger.error(f"Could not announce the service {service.name}: {e}")
                 continue
 
     def unregister_services(self):
         for service in self.services:
             try:
                 self.zeroconf.unregister_service(service)
-                print(f"Service {service.server}.{service.type} unregistered")
+                logger.info(f"Successfully unregistered the service {service.name}")
             except Exception as e:
-                print(f"Error unregistering service {service.server}.{service.type}: {e}")
+                logger.error(f"Could not unregister the service {service.name}: {e}")
                 continue
             
 if __name__ == "__main__":
@@ -34,7 +39,7 @@ if __name__ == "__main__":
                     f"{get_self_hostname()}._dinasore._tcp.local.",
                     addresses=[socket.inet_aton(get_self_ip())],
                     port=2901,
-                    server=f"{get_self_hostname()}.local.",
+                    server=get_self_hostname(),
                     properties={},
                 )
     ]

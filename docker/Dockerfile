@@ -4,10 +4,9 @@ LABEL maintainer="Vinicius Werlich Kuci Barbosa <vinicius.kuci@hotmail.com>"
 
 WORKDIR /T-Rex
 COPY requirements.txt .
-#COPY . .
+COPY docker/packages.txt .
 
-RUN apt-get update && apt-get install -y tcpdump net-tools iproute2 iputils-ping && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && xargs -a packages.txt apt-get install -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-RUN rm -f requirements.txt
-
+RUN rm -f requirements.txt packages.txt

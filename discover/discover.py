@@ -1,27 +1,32 @@
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
 from utils import *
+import logging
+
+logger = logging.getLogger("__name__")
+logging.basicConfig(filename="logs.log", level=logging.INFO, format='%(asctime)s %(levelname)-7s - %(module)-9s - %(funcName)-20s - %(message)s', datefmt='[%Y-%m-%d %H:%M:%S] -')
+
 
 services = {}
 
 class Discover(ServiceListener):
 
     def update_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        print(f"Service {name} updated")
+        logger.info(f"Service {name} updated")
 
     def remove_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        print(f"Service {name} removed")
+        logger.info(f"Service {name} removed")
         if name in services:
             del services[name]
-            print(f"Services list: {services}")
+            logger.info(f"Services list: {services}")
 
     def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         info = zc.get_service_info(type_, name)
         address = translate_address(info.addresses[0])
         if address is None:
-            print(f"Service {name} has no address")
+            logger.warning(f"Service {name} has no address. Cannot add to services list.")
             return
         services[name] = address
-        print(f"Service {name} added")
+        logger.info(f"Service {name} added")
         print(f"Services list: {services}")
         
 

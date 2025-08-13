@@ -1,5 +1,5 @@
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
-from .utils import *
+import socket
 import logging
 import threading
 import os
@@ -25,7 +25,7 @@ class Discover(ServiceListener):
 
     def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         info = zc.get_service_info(type_, name)
-        address = translate_address(info.addresses[0])
+        address = socket.inet_ntoa(info.addresses[0]) #add error handling
         if address is None:
             logger.warning(f"Service {name} has no address. Cannot add to services list.")
             return

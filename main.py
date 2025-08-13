@@ -1,5 +1,8 @@
-from zeroconf import Zeroconf
+from zeroconf import Zeroconf, ServiceInfo
 from discover import Discover, DiscoverThread
+from announcer import Announcer
+from announcer.utils import get_self_hostname, get_self_ip
+import socket
 import threading
 import logging
 import os
@@ -17,6 +20,7 @@ def main():
     logging.info(f"Main thread - {main_thread.name} - started with process ID: {os.getpid()}")
     
     zeroconf = Zeroconf()
+    announcer = None
     
     try:
         discover = Discover(zeroconf)
@@ -30,7 +34,22 @@ def main():
             logging.info("Service not found. Instance assuming announcer role.")
             discover_thread.stop()
             print("Running in ANNOUNCER mode...")
-        
+            announcer = Announcer(zeroconf)
+            services = [
+                ServiceInfo(
+                    '_dinasore._tcp.local.',
+                    f"{get_self_hostname()}._dinasore._tcp.local.",
+                    addresses=[socket.inet_aton(get_self_ip())],
+                    port=2901,
+                    server=get_self_hostname(),
+                    properties={},
+                )
+            ]
+            for service in services:
+                announcer.add_service(service)
+
+            announcer.announce_services()
+
         try:
             input("Press enter to exit...\n")
         except KeyboardInterrupt:
@@ -38,6 +57,8 @@ def main():
             
     finally:
         print("Exiting main thread...")
+        if announcer:
+            announcer.unregister_services()
         discover_thread.stop()
         zeroconf.close()
 

@@ -1,5 +1,4 @@
 import socket
-import uuid
 
 def get_self_ip():
     """

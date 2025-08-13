@@ -1,7 +1,7 @@
 # T-Rex
 
 A first overview fo the system:
-![Texto alternativo](./docs/system-diagram.svg)
+![](./docs/system-diagram.svg)
 
 # Important notes:
 ## mDNS specs:
@@ -33,3 +33,9 @@ Subsequent servies announces full details about the service, IP and Port:
 ``` text
 18:45:10.325678 IP 192.168.1.50.mdns > 224.0.0.251.mdns: 0*- [0q] 5/0/0 PTR MyDevice._ServiceType._tcp.local., (Cache flush) SRV ServiceName.MyDevice._tcp.local.:ServicePort 0 0, (Cache flush) TXT "versao=1.0", (Cache flush) A 192.168.1.50, (Cache flush) NSEC (200)
 ```
+# Discovery architecture
+The discovery and gateway election process cas be described as the following diagram:
+
+![](./docs/discover-announcer-sequence.svg)
+
+The Discovery thread of each device waits for an event within a defined timeout. If no gateway is found, the system assumes itself as a gateway device and register it's service on the network. Every Dinasore subsequently started will search and find the previous gateway device and start announcing itself as a worker device.

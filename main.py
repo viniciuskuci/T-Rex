@@ -1,8 +1,8 @@
-from zeroconf import ServiceBrowser, Zeroconf
+from zeroconf import Zeroconf
 from discover import Discover, DiscoverThread
-import announcer
 import threading
 import logging
+import os
 
 
 logging.basicConfig(
@@ -14,16 +14,33 @@ logging.basicConfig(
 
 def main():
     main_thread = threading.current_thread()
-    logging.info(f"Main thread - {main_thread.name} - started with thread ID: {threading.get_ident()}")
-    with Zeroconf() as zeroconf:
+    logging.info(f"Main thread - {main_thread.name} - started with process ID: {os.getpid()}")
+    
+    zeroconf = Zeroconf()
+    
+    try:
         discover = Discover(zeroconf)
         discover_thread = DiscoverThread(discover)
         discover_thread.start()
-    try:
-        input("Press enter to exit...\n\n")
+        
+        if discover.found_service.wait(20):
+            logging.info("Service found. Instance is assuming worker role.")
+            print("Running in WORKER mode...")
+        else:
+            logging.info("Service not found. Instance assuming announcer role.")
+            discover_thread.stop()
+            print("Running in ANNOUNCER mode...")
+        
+        try:
+            input("Press enter to exit...\n")
+        except KeyboardInterrupt:
+            logging.info("Program interrupted")
+            
     finally:
+        print("Exiting main thread...")
         discover_thread.stop()
-        logging.info("T-Rex service discovery stopped.")
+        zeroconf.close()
+
 
 if __name__ == "__main__":
     main()

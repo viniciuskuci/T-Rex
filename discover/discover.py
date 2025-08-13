@@ -12,7 +12,8 @@ class Discover(ServiceListener):
     def __init__(self, zeroconf: Zeroconf) -> None:
         self._zeroconf = zeroconf
         self._browser = None
-        
+        self.found_service = threading.Event()
+
     def update_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         logger.info(f"Service {name} updated")
 
@@ -31,6 +32,7 @@ class Discover(ServiceListener):
         SERVICES[name] = address
         logger.info(f"Service {name} added")
         print(f"Services list: {SERVICES}")
+        self.found_service.set()
         #add here the script to add the device to the database
     
     def _add_to_database(self) -> None:

@@ -1,43 +1,74 @@
-from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
-import socket
-import logging
+from zeroconf import Zeroconf, ServiceInfo, ServiceBrowser, ServiceListener
+from typing import Optional, Callable
 import threading
 import os
+from .models import Service, DiscoveryEvent
+import socket
+import logging
 
 logger = logging.getLogger(__name__)
 
-SERVICES = {} #will be replaced by a database in the future
+class Announcer:
+    def __init__(self, zeroconf: Zeroconf) -> None:
+        self._services = []
+        self.zeroconf = zeroconf
+
+    def add_service(self, service: ServiceInfo) -> None:
+        self._services.append(service)
+
+    def announce_services(self) -> None:
+        for service in self._services:
+            try:
+                self.zeroconf.register_service(service)
+                logger.info(f"Successfully registered the service {service.name}, announced at {socket.inet_ntoa(service.addresses[0])}:{service.port}")
+               
+            except Exception as e:
+                logger.error(f"Could not announce the service {service.name}: {e}")
+                continue
+
+    def unregister_services(self) -> None:
+        for service in self._services:
+            try:
+                self.zeroconf.unregister_service(service)
+                logger.info(f"Successfully unregistered the service {service.name}")
+            except Exception as e:
+                logger.error(f"Could not unregister the service {service.name}: {e}")
+                continue
+    @property
+    def services(self) -> list[ServiceInfo]:
+        return self._services.copy()
+
+
 
 class Discover(ServiceListener):
-    def __init__(self, zeroconf: Zeroconf) -> None:
+    def __init__(self, zeroconf: Zeroconf, callback: Optional[Callable] = None) -> None:
         self._zeroconf = zeroconf
         self._browser = None
-        self.found_service = threading.Event()
+        self._callback = callback
 
     def update_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        logger.info(f"Service {name} updated")
+        try:
+            info = zc.get_service_info(type_, name)
+            if self._callback:
+                self._callback(Service(info=info, event=DiscoveryEvent.UPDATED))
+            
+        except Exception as e:
+            logger.error(f"Error updating service {name}: {e}")
 
     def remove_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        logger.info(f"Service {name} removed")
-        if name in SERVICES:
-            del SERVICES[name]
-            logger.info(f"Services list: {SERVICES}")
+        try:
+            if self._callback:
+                self._callback(Service(info=zc.get_service_info(type_, name), event=DiscoveryEvent.REMOVED))
+        except Exception as e:
+            logger.error(f"Error removing service {name}: {e}")
 
     def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
-        info = zc.get_service_info(type_, name)
-        address = socket.inet_ntoa(info.addresses[0]) #add error handling
-        if address is None:
-            logger.warning(f"Service {name} has no address. Cannot add to services list.")
-            return
-        SERVICES[name] = address
-        logger.info(f"Service {name} added")
-        print(f"Services list: {SERVICES}")
-        self.found_service.set()
-        #add here the script to add the device to the database
-    
-    def _add_to_database(self) -> None:
-        """adds a new device to the database"""
-        pass
+        try:
+            info = zc.get_service_info(type_, name)
+            if self._callback:
+                self._callback(Service(info=info, event=DiscoveryEvent.ADDED))
+        except Exception as e:
+            logger.error(f"Error adding service {name}: {e}")
 
     def launch(self) -> bool:
         try:
@@ -63,6 +94,10 @@ class Discover(ServiceListener):
         else:
             logger.warning("ServiceBrowser was not running")
 
+
+'''
+------- Review -------
+'''
 class DiscoverThread(threading.Thread):
     def __init__(self, discover: Discover) -> None:
         super().__init__(daemon=True)

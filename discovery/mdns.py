@@ -2,7 +2,7 @@ from zeroconf import Zeroconf, ServiceInfo, ServiceBrowser, ServiceListener
 from typing import Optional, Callable
 import threading
 import os
-from .models import Service, DiscoveryEvent
+from .models import DiscoveryEvent
 import socket
 import logging
 
@@ -45,12 +45,13 @@ class Discover(ServiceListener):
         self._zeroconf = zeroconf
         self._browser = None
         self._callback = callback
+        self.not_alone = threading.Event()
 
     def update_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         try:
             info = zc.get_service_info(type_, name)
             if self._callback:
-                self._callback(Service(info=info, event=DiscoveryEvent.UPDATED))
+                self._callback(info=info, event=DiscoveryEvent.UPDATED)
             
         except Exception as e:
             logger.error(f"Error updating service {name}: {e}")
@@ -58,15 +59,18 @@ class Discover(ServiceListener):
     def remove_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         try:
             if self._callback:
-                self._callback(Service(info=zc.get_service_info(type_, name), event=DiscoveryEvent.REMOVED))
+                self._callback(info=zc.get_service_info(type_, name), event=DiscoveryEvent.REMOVED)
         except Exception as e:
             logger.error(f"Error removing service {name}: {e}")
 
     def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         try:
             info = zc.get_service_info(type_, name)
+            if not self.not_alone.is_set():
+                if info.properties.get(b"role", b"").decode("utf-8") == "gateway":
+                    self.not_alone.set()
             if self._callback:
-                self._callback(Service(info=info, event=DiscoveryEvent.ADDED))
+                self._callback(info=info, event=DiscoveryEvent.ADDED)
         except Exception as e:
             logger.error(f"Error adding service {name}: {e}")
 
@@ -94,6 +98,12 @@ class Discover(ServiceListener):
         else:
             logger.warning("ServiceBrowser was not running")
 
+    def set_callback(self, callback: Callable) -> None:
+        self._callback = callback
+
+    @property
+    def zeroconf_instance(self) -> Zeroconf:
+        return self._zeroconf
 
 '''
 ------- Review -------

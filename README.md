@@ -39,3 +39,9 @@ The discovery and gateway election process cas be described as the following dia
 ![](./docs/discover-announcer-sequence.svg)
 
 The Discovery thread of each device waits for an event within a defined timeout. If no gateway is found, the system assumes itself as a gateway device and register it's service on the network. Every Dinasore subsequently started will search and find the previous gateway device and start announcing itself as a worker device.
+
+# TODO
+
+- ☑️ Implement the discovery state machine
+- ⬛️ integrate the Discover SM and DB interfaces
+- ⬛️ Create a configuration file

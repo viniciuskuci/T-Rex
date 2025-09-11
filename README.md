@@ -43,5 +43,6 @@ The Discovery thread of each device waits for an event within a defined timeout.
 # TODO
 
 - [X] Implement the discovery state machine
-- [ ] integrate the Discover SM and DB interfaces
+- [X] integrate the Discover SM and DB interfaces
+- [ ] Update service when the self IP changes
 - [ ] Create a configuration file

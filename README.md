@@ -42,6 +42,6 @@ The Discovery thread of each device waits for an event within a defined timeout.
 
 # TODO
 
-- ☑️ Implement the discovery state machine
-- ⬛️ integrate the Discover SM and DB interfaces
-- ⬛️ Create a configuration file
+- [X] Implement the discovery state machine
+- [ ] integrate the Discover SM and DB interfaces
+- [ ] Create a configuration file

@@ -25,6 +25,7 @@ class SearchGateway(State):
             logger.info(f"{self.__class__.__name__}: No gateway found")
             self.context.set_state(GatewayNotFound(self._discover))
 
+
 class GatewayNotFound(State):
 
     def __init__(self, discover: Discover) -> None:
@@ -32,7 +33,7 @@ class GatewayNotFound(State):
 
     def run(self) -> None:
         self._discover.stop()
-        
+
         self.context.set_role(Constants.ROLE_GATEWAY.value)
         self.context.set_state(GatewayState(self._discover))
 
@@ -53,11 +54,11 @@ class WorkerState(State):
         self._discover = discover
 
     def run(self) -> None:
-        
+
         announcer = Announcer(self._discover.zeroconf_instance)
         announcer.add_service(DinasoreService.worker())
         announcer.announce_services()
-        
+
         print("State WorkerState. Working...")
         while True:
             time.sleep(1)

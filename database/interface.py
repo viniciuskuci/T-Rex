@@ -3,7 +3,6 @@ from typing import Optional
 
 
 class DatabaseInterface(ABC):
-
     """
     Interface for different database implementations.
 
@@ -23,7 +22,7 @@ class DatabaseInterface(ABC):
     @abstractmethod
     def disconnect(self) -> None:
         pass
-    
+
     @abstractmethod
     def add_devices(self, devices: list) -> list:
         """
@@ -76,4 +75,3 @@ class DatabaseInterface(ABC):
             list: List of failed updates.
         """
         pass
-

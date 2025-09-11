@@ -3,22 +3,25 @@ from dataclasses import dataclass
 from enum import Enum
 import socket
 
+
 def get_self_ip():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.connect(("8.8.8.8", 80))
             return s.getsockname()[0]
-        
+
     except OSError as e:
         print(f"Error getting local IP address: {e}")
         return None
 
+
 def get_self_hostname() -> str:
 
     hostname = socket.gethostname()
-    if hostname.endswith('.local'):
+    if hostname.endswith(".local"):
         hostname = hostname[:-6]
     return hostname
+
 
 class Constants(Enum):
     DISCOVERY_TIMEOUT = 5
@@ -40,17 +43,15 @@ class DinasoreService:
     def worker() -> ServiceInfo:
         ip = get_self_ip()
         name = f"{get_self_hostname()}.{Constants.DINASORE_SERVICE_TYPE.value}"
-        
+
         return ServiceInfo(
             type_=Constants.DINASORE_SERVICE_TYPE.value,
             name=name,
             addresses=[socket.inet_aton(ip)],
             port=Constants.DINASORE_PORT.value,
-            properties={
-                "role": Constants.ROLE_WORKER.value
-            }
+            properties={"role": Constants.ROLE_WORKER.value},
         )
-    
+
     @staticmethod
     def gateway() -> ServiceInfo:
         ip = get_self_ip()
@@ -61,7 +62,5 @@ class DinasoreService:
             name=name,
             addresses=[socket.inet_aton(ip)],
             port=Constants.DINASORE_PORT.value,
-            properties={
-                "role": Constants.ROLE_GATEWAY.value
-            }
+            properties={"role": Constants.ROLE_GATEWAY.value},
         )

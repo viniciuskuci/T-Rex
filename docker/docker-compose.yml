@@ -10,6 +10,7 @@ services:
       virtual_bridge:
         ipv4_address: 10.20.30.2
     tty: true
+    privileged: true
 
   dinasore2:
     image: python:3.10-slim
@@ -20,6 +21,7 @@ services:
       virtual_bridge:
         ipv4_address: 10.20.30.3
     tty: true
+    privileged: true
 
   dinasore3:
     image: python:3.10-slim
@@ -30,6 +32,7 @@ services:
       virtual_bridge:
         ipv4_address: 10.20.30.4
     tty: true
+    privileged: true
   
 networks:
   virtual_bridge:

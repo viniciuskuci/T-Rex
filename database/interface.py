@@ -65,13 +65,13 @@ class DatabaseInterface(ABC):
     @abstractmethod
     def update_device(self, filter: tuple, device: dict) -> list:
         """
-        Update a list of devices in the database.
+        Update a device in the database.
 
         Args:
             filter (tuple): A filter tuple to narrow down the search.
-            devices (dict): Device to update. Must be a dictionary.
+            device (dict): Device to update. Must be a dictionary.
 
         Returns:
-            list: List of failed updates.
+            bool: True if the device was updated successfully, False otherwise.
         """
         pass

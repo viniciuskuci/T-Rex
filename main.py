@@ -1,6 +1,6 @@
 from discovery import discovery
 import logging
-
+from database.json_db import JsonDatabase
 
 logging.basicConfig(
     filename="logs.log",
@@ -11,7 +11,8 @@ logging.basicConfig(
 
 
 def main():
-    discovery.start()
+    database = JsonDatabase("devices.json")
+    discovery.start_discovery(database)
 
 
 if __name__ == "__main__":

@@ -6,12 +6,11 @@ import socket
 
 def get_self_ip():
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-            s.connect(("8.8.8.8", 80))
-            return s.getsockname()[0]
-
-    except OSError as e:
-        print(f"Error getting local IP address: {e}")
+        hostname = socket.gethostname()
+        ip = socket.gethostbyname(hostname)
+        return ip
+    except Exception as e:
+        print(f"Error getting local IP: {e}")
         return None
 
 

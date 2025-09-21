@@ -2,7 +2,7 @@ from zeroconf import Zeroconf, ServiceInfo, ServiceBrowser, ServiceListener
 from typing import Optional, Callable
 import threading
 import os
-from .models import DiscoveryEvent
+from .types import DiscoveryEvent
 import socket
 import logging
 

@@ -1,7 +1,7 @@
 from .base_fsm import State
 import time
 from .mdns import Discover, Announcer
-from .models import Constants, DinasoreService
+from . import types
 from typing import Optional
 from zeroconf import Zeroconf
 import logging
@@ -18,7 +18,7 @@ class SearchGateway(State):
 
     def run(self) -> None:
         self._discover.launch()
-        if self._discover.not_alone.wait(float(Constants.DISCOVERY_TIMEOUT.value)):
+        if self._discover.not_alone.wait(float(types.DISCOVERY_TIMEOUT)):
             logger.info(f"{self.__class__.__name__}: Gateway found")
             self.context.set_state(GatewayFound(self._discover))
         else:
@@ -34,7 +34,7 @@ class GatewayNotFound(State):
     def run(self) -> None:
         self._discover.stop()
 
-        self.context.set_role(Constants.ROLE_GATEWAY.value)
+        self.context.set_role(types.ROLE_GATEWAY)
         self.context.set_state(GatewayState(self._discover))
 
 
@@ -56,7 +56,7 @@ class WorkerState(State):
     def run(self) -> None:
 
         announcer = Announcer(self._discover.zeroconf_instance)
-        announcer.add_service(DinasoreService.worker())
+        announcer.add_service(types.DinasoreService.worker())
         announcer.announce_services()
 
         print("State WorkerState. Working...")
@@ -72,7 +72,7 @@ class GatewayState(State):
 
     def run(self) -> None:
         announcer = Announcer(self._discover.zeroconf_instance)
-        announcer.add_service(DinasoreService.gateway())
+        announcer.add_service(types.DinasoreService.gateway())
         announcer.announce_services()
         self._discover.set_callback(self.context.discovery_callback)
         self._discover.launch()

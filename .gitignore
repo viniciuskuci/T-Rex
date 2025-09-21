@@ -2,3 +2,5 @@
 .vscode/
 __pycache__/
 logs.log
+setup.sh
+macos_setup.scpt

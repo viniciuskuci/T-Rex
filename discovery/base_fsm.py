@@ -1,7 +1,7 @@
 from __future__ import annotations  # python 3.7
 from typing import Optional
 from abc import ABC, abstractmethod
-from .models import Constants, DiscoveryEvent, get_self_ip
+from . import types
 from zeroconf import ServiceInfo
 import socket
 import logging
@@ -34,21 +34,20 @@ class Context:
     def set_role(self, role: str) -> None:
         self._role = role
 
-    def discovery_callback(self, info: ServiceInfo, event: DiscoveryEvent) -> None:
+    def discovery_callback(
+        self, info: ServiceInfo, event: types.DiscoveryEvent
+    ) -> None:
 
-        if get_self_ip() == socket.inet_ntoa(info.addresses[0]):
+        if types.get_self_ip() == socket.inet_ntoa(info.addresses[0]):
             return
 
-        if event == DiscoveryEvent.ADDED:
+        if event == types.DiscoveryEvent.ADDED:
             role = info.properties.get(b"role", b"").decode("utf-8")
-            if role == self._role == Constants.ROLE_GATEWAY.value:
+            if role == self._role == types.ROLE_GATEWAY:
                 logger.warning(
-                    f"{get_self_ip()}: Another gateway found in the network! {socket.inet_ntoa(info.addresses[0])}:{info.port}"
+                    f"{types.get_self_ip()}: Another gateway found in the network! {socket.inet_ntoa(info.addresses[0])}:{info.port}"
                 )
-            elif (
-                role == Constants.ROLE_WORKER.value
-                and self._role == Constants.ROLE_GATEWAY.value
-            ):
+            elif role == types.ROLE_WORKER and self._role == types.ROLE_GATEWAY:
                 logger.info(f"New Worker found: {info}")
                 if self._database:
                     self._database.add_devices(
@@ -63,7 +62,7 @@ class Context:
                         ]
                     )
 
-        elif event == DiscoveryEvent.REMOVED:
+        elif event == types.DiscoveryEvent.REMOVED:
             logger.info(f"Service removed: {info}")
             if self._database:
                 self._database.remove_device(
@@ -76,7 +75,7 @@ class Context:
                     }
                 )
 
-        elif event == DiscoveryEvent.UPDATED:
+        elif event == types.DiscoveryEvent.UPDATED:
             logger.info(f"Service updated: {info}")
             if self._database:
                 self._database.update_device(
